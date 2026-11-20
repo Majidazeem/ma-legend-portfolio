@@ -481,23 +481,17 @@
             60% { box-shadow: 0 0 32px 6px rgba(56, 189, 248, 0.5), 0 0 44px 8px rgba(168, 85, 247, 0.4); }
             100% { box-shadow: 0 22px 45px -12px rgba(0, 0, 0, 0.48); }
         }
-        /* Robust first-paint fallback: never hide page content while scripts initialize. */
-        .reveal-item,
-        .reveal-item.is-revealed,
-        .reveal-right,
-        .reveal-left,
-        .reveal-top,
-        .reveal-shatter,
-        .reveal-flip,
-        .reveal-glow {
-            opacity: 1 !important;
-            transform: none !important;
-            filter: none !important;
-        }
-
-        #shatter-intro-overlay {
-            display: none !important;
-        }
+        /* Keep content visible if JavaScript is unavailable, while retaining scroll reveals when active. */
+        .reveal-item { opacity: 1; transform: none; filter: none; }
+        html.js-ready .reveal-item:not(.is-revealed) { opacity: 0; }
+        html.js-ready .reveal-item.reveal-right:not(.is-revealed) { transform: perspective(1000px) translate3d(60px, 0, -30px) rotateY(-10deg); }
+        html.js-ready .reveal-item.reveal-left:not(.is-revealed) { transform: perspective(1000px) translate3d(-60px, 0, -30px) rotateY(10deg); }
+        html.js-ready .reveal-item.reveal-top:not(.is-revealed) { transform: perspective(1000px) translate3d(0, -50px, -25px) rotateX(12deg); }
+        html.js-ready .reveal-item.reveal-shatter:not(.is-revealed) { transform: perspective(1000px) scale(0.86) rotate3d(1, -1, 0.4, 18deg) translateY(35px); filter: blur(4px); }
+        html.js-ready .reveal-item.reveal-flip:not(.is-revealed) { transform: perspective(1100px) rotateY(30deg) rotateX(8deg) scale(0.9); }
+        html.js-ready .reveal-item.reveal-glow:not(.is-revealed) { transform: scale(0.92) translateY(25px); }
+        #shatter-intro-overlay { display: none !important; }
+        #shatter-intro-overlay.is-playing { display: flex !important; }
 
     </style>
 </head>
@@ -1069,7 +1063,9 @@
 
         function isAdminRoute() {
             const params = new URLSearchParams(window.location.search);
-            return false;
+            return window.location.pathname.toLowerCase().endsWith('/admin.html')
+                || params.get('admin') === 'legend'
+                || window.location.hash === '#admin';
         }
 
         async function persistAppState() {
@@ -1158,6 +1154,7 @@
             if (!overlay) return;
 
             overlay.classList.remove('hidden-intro', 'phase-join', 'phase-core', 'phase-crack', 'phase-shatter');
+            overlay.classList.add('is-playing');
             shardsLayer.innerHTML = '';
             void overlay.offsetWidth;
 
@@ -1170,6 +1167,7 @@
             setTimeout(() => overlay.classList.add('phase-shatter'), 1300);
             setTimeout(() => {
                 overlay.classList.add('hidden-intro');
+                overlay.classList.remove('is-playing');
                 shardsLayer.innerHTML = '';
             }, 2250);
         }
@@ -1570,8 +1568,27 @@
             }
         }
 
-        function copyToClipboard(text, msg) {
-            navigator.clipboard?.writeText(text).then(() => showToast(msg)).catch(() => showToast(text));
+        async function copyToClipboard(text, msg) {
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(text);
+                } else {
+                    const field = document.createElement('textarea');
+                    field.value = text;
+                    field.setAttribute('readonly', '');
+                    field.style.position = 'fixed';
+                    field.style.opacity = '0';
+                    document.body.appendChild(field);
+                    field.select();
+                    const copied = document.execCommand('copy');
+                    field.remove();
+                    if (!copied) throw new Error('Clipboard access is unavailable.');
+                }
+                showToast(msg || 'Copied!');
+            } catch (error) {
+                console.error('Clipboard copy failed:', error);
+                showToast('Copy failed. Please select and copy manually.');
+            }
         }
 
         let toastTimer;
@@ -1597,8 +1614,21 @@
         function bootApplication() {
             document.documentElement.classList.add('js-ready');
             renderAllViews();
-            document.getElementById('public-portfolio-view').classList.remove('hidden');
-            playShatterIntro();
+            const overlay = document.getElementById('shatter-intro-overlay');
+            const publicView = document.getElementById('public-portfolio-view');
+            const adminView = document.getElementById('separate-admin-view');
+            if (isAdminRoute()) {
+                overlay.classList.add('hidden-intro');
+                overlay.classList.remove('is-playing');
+                publicView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                document.getElementById('admin-login-card').classList.remove('hidden');
+                document.getElementById('admin-dashboard-panel').classList.add('hidden');
+            } else {
+                adminView.classList.add('hidden');
+                publicView.classList.remove('hidden');
+                playShatterIntro();
+            }
         }
 
         window.addEventListener('hashchange', bootApplication);
