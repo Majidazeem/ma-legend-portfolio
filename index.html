@@ -89,6 +89,7 @@
            1. CINEMATIC 3D SPLIT-SCREEN SHATTER GLASS INTRO
            ===================================================================== */
         #shatter-intro-overlay {
+            display: none;
             position: fixed;
             inset: 0;
             z-index: 9999;
@@ -480,6 +481,17 @@
             60% { box-shadow: 0 0 32px 6px rgba(56, 189, 248, 0.5), 0 0 44px 8px rgba(168, 85, 247, 0.4); }
             100% { box-shadow: 0 22px 45px -12px rgba(0, 0, 0, 0.48); }
         }
+        /* Fail-safe: keep the portfolio visible if Firebase/module scripts fail. */
+        body:not(.js-ready) .reveal-item {
+            opacity: 1 !important;
+            transform: none !important;
+            filter: none !important;
+        }
+
+        html.js-ready #shatter-intro-overlay:not(.hidden-intro) {
+            display: flex;
+        }
+
     </style>
 </head>
 <body class="antialiased selection:bg-sky-500 selection:text-white">
@@ -1576,6 +1588,7 @@
         });
 
         function bootApplication() {
+            document.documentElement.classList.add('js-ready');
             renderAllViews();
             document.getElementById('public-portfolio-view').classList.remove('hidden');
             playShatterIntro();
