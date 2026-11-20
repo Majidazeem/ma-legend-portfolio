@@ -483,13 +483,8 @@
         }
         /* Keep content visible if JavaScript is unavailable, while retaining scroll reveals when active. */
         .reveal-item { opacity: 1; transform: none; filter: none; }
-        html.js-ready .reveal-item:not(.is-revealed) { opacity: 0; }
-        html.js-ready .reveal-item.reveal-right:not(.is-revealed) { transform: perspective(1000px) translate3d(60px, 0, -30px) rotateY(-10deg); }
-        html.js-ready .reveal-item.reveal-left:not(.is-revealed) { transform: perspective(1000px) translate3d(-60px, 0, -30px) rotateY(10deg); }
-        html.js-ready .reveal-item.reveal-top:not(.is-revealed) { transform: perspective(1000px) translate3d(0, -50px, -25px) rotateX(12deg); }
-        html.js-ready .reveal-item.reveal-shatter:not(.is-revealed) { transform: perspective(1000px) scale(0.86) rotate3d(1, -1, 0.4, 18deg) translateY(35px); filter: blur(4px); }
-        html.js-ready .reveal-item.reveal-flip:not(.is-revealed) { transform: perspective(1100px) rotateY(30deg) rotateX(8deg) scale(0.9); }
-        html.js-ready .reveal-item.reveal-glow:not(.is-revealed) { transform: scale(0.92) translateY(25px); }
+        /* Keep cards visible even if the scroll observer or Firebase module is unavailable. */
+        html.js-ready .reveal-item:not(.is-revealed) { opacity: 1; transform: none; filter: none; }
         #shatter-intro-overlay { display: none !important; }
         #shatter-intro-overlay.is-playing { display: flex !important; }
 
@@ -930,6 +925,106 @@
         </div>
     </div>
 
+    <!-- Independent UI controls: these remain available even if Firebase modules fail to load. -->
+    <script>
+    (() => {
+        const byId = (id) => document.getElementById(id);
+        window.showToast = window.showToast || ((message) => {
+            const toast = byId('crystal-toast');
+            const label = byId('crystal-toast-msg');
+            if (!toast || !label) { console.info(message); return; }
+            label.textContent = message;
+            toast.classList.remove('opacity-0', '-translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            clearTimeout(window.__maToastTimer);
+            window.__maToastTimer = setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-2');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 2600);
+        });
+        window.toggleCrystalTheme = () => {
+            document.body.classList.toggle('pearl-light');
+            const light = document.body.classList.contains('pearl-light');
+            const sw = byId('theme-toggle-switch');
+            const label = byId('theme-mode-label');
+            if (sw) { sw.classList.toggle('is-on', !light); sw.setAttribute('aria-checked', String(!light)); }
+            if (label) label.textContent = light ? 'Pearl Light' : 'Dark Prism';
+            window.showToast(light ? 'Pearl Studio Light Activated' : 'Dark Crystal Prism Activated');
+        };
+        window.playShatterIntro = () => {
+            const overlay = byId('shatter-intro-overlay');
+            if (!overlay) return;
+            overlay.classList.add('is-playing');
+            overlay.classList.remove('hidden-intro');
+            setTimeout(() => { overlay.classList.add('hidden-intro'); overlay.classList.remove('is-playing'); }, 1800);
+        };
+        window.openContactModal = () => {
+            const modal = byId('contact-modal');
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+        };
+        window.closeContactModal = () => {
+            const modal = byId('contact-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
+        window.scrollToSec = (id, button) => {
+            document.querySelectorAll('.dock-item').forEach(el => el.classList.remove('crystal-tab-active'));
+            if (button) button.classList.add('crystal-tab-active');
+            const target = byId(id);
+            if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+        };
+        window.toggleHireSwitch = () => {
+            const sw = byId('hire-toggle-switch');
+            const label = byId('hire-status-text');
+            if (!sw) return;
+            const on = sw.classList.toggle('is-on');
+            sw.setAttribute('aria-checked', String(on));
+            if (label) label.textContent = on ? 'Hire Open' : 'In Build';
+            window.showToast(on ? 'Available for New Projects' : 'Currently in Active Sprint');
+        };
+        window.toggleSkillChip = (button, keyword) => {
+            if (button) button.classList.toggle('selected');
+            window.showToast('Updated ' + keyword + ' Filter');
+        };
+        window.filterPortfolioItems = (query) => {
+            const q = String(query || '').trim().toLowerCase();
+            document.querySelectorAll('.portfolio-searchable').forEach(card => {
+                card.classList.toggle('hidden', !!q && !(card.dataset.search + ' ' + card.textContent).toLowerCase().includes(q));
+            });
+        };
+        window.copyToClipboard = async (value, message) => {
+            try {
+                if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(value);
+                else {
+                    const field = document.createElement('textarea');
+                    field.value = value; field.style.position = 'fixed'; field.style.opacity = '0';
+                    document.body.appendChild(field); field.select();
+                    const ok = document.execCommand('copy'); field.remove();
+                    if (!ok) throw new Error('Copy unavailable');
+                }
+                window.showToast(message || 'Copied!');
+            } catch (error) { console.error(error); window.showToast('Copy unavailable in this browser.'); }
+        };
+        window.openLightbox = (src, caption) => {
+            const modal=byId('photo-lightbox-modal'), img=byId('lightbox-img'), label=byId('lightbox-caption');
+            if (!modal || !img || !label) return;
+            img.src=src; label.textContent=caption || ''; modal.classList.remove('hidden'); modal.classList.add('flex');
+        };
+        window.closeLightbox = () => {
+            const modal=byId('photo-lightbox-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
+        window.submitClientInquiry = (event) => {
+            if (event) event.preventDefault();
+            const name=(byId('inq-name')?.value || '').trim();
+            const service=byId('inq-service')?.value || '';
+            const message=(byId('inq-msg')?.value || '').trim();
+            const subject=encodeURIComponent('Portfolio inquiry - ' + name);
+            const body=encodeURIComponent('Name: '+name+'\nService: '+service+'\nMessage: '+message);
+            window.location.href='mailto:contact@legendmod.net?subject='+subject+'&body='+body;
+            window.showToast('Opening your email app…');
+        };
+    })();
+    </script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getDatabase, ref, get, set, onValue, push, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
