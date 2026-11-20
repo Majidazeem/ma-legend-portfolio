@@ -12,12 +12,12 @@ A Next.js App Router + TypeScript portfolio with a dark prism / liquid-glass vis
 - Graceful local fallback content when Firebase is not configured or temporarily unavailable.
 - Contact API route using Firebase Admin SDK credentials held only on the server.
 
-## Requirements
+## 1. Requirements
 
-- Node.js 20.9+ and npm.
+- Node.js 20.9+ (recommended) and npm.
 - Access to the existing Firebase project `profile-website-b5d3a`.
 
-## Install and run
+## 2. Install and run locally
 
 ```bash
 npm install
@@ -25,77 +25,106 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open `http://localhost:3000`. On Windows, copy `.env.example` to `.env.local` manually.
+Open `http://localhost:3000`. On Windows, copy `.env.example` to `.env.local` manually if `cp` is unavailable.
 
-The Firebase web configuration in `.env.example` is public client configuration, not a service-account credential. Keep `.env.local` out of Git.
+The Firebase web configuration is already filled in from the project details supplied. It is public client configuration; it is not a service-account credential. Keep `.env.local` out of Git.
 
-## Firebase setup
+## 3. Firebase setup
 
-1. Open the existing Firebase project **profile-website-b5d3a**. Do not create a new project.
-2. Enable Authentication → Sign-in method → **Email/Password**.
-3. Add the administrator account in Authentication → Users and copy its UID.
-4. Set `NEXT_PUBLIC_ADMIN_UID` in `.env.local` to that UID.
-5. Replace `REPLACE_WITH_FIREBASE_AUTH_UID` in `database.rules.json` with the same UID and publish the rules in Realtime Database → Rules.
-6. Confirm the Realtime Database URL is the supplied `asia-southeast1` URL.
-7. Optional: enable Firebase Storage and deploy Storage Rules allowing writes only to `portfolio/{adminUid}/...` for the authorized UID.
-8. The dashboard writes the `/site` object. The rules allow public reads of `/site`, admin-only writes, public inquiry creation, and admin-only inquiry reads/deletes. Test the rules in the Firebase Rules simulator before production.
+1. In Firebase Console, open the existing project **profile-website-b5d3**. Do not create a new project.
+2. Authentication → Sign-in method → enable **Email/Password**.
+3. Authentication → Users → add the administrator account with an email and a strong password.
+4. Open that user and copy its **UID**.
+5. Put the UID in `.env.local` as `NEXT_PUBLIC_ADMIN_UID=YOUR_UID`.
+6. Replace `REPLACE_WITH_FIREBASE_AUTH_UID` in `database.rules.json` with the same UID, then publish the rules in Realtime Database → Rules (or deploy using Firebase CLI).
+7. Confirm the Realtime Database URL is the supplied `asia-southeast1` URL.
+8. Optional image uploads: enable Firebase Storage and deploy Storage Rules that permit writes only to `portfolio/{adminUid}/...` for the authorized UID. Example rules are provided below.
+9. In Realtime Database, create an initial `site` node if you want to seed your content immediately. The site displays a polished local fallback until data exists.
 
 ### Database layout
 
 ```text
 /site
-  /profile
-  /skills
-  /projects
-  /videos
-  /gallery
-  /socialLinks
-  /contact
-  /settings
-/inquiries
+  /profile       { name, headline, bio, image, availability }
+  /skills        [{ name, level }]
+  /projects      [{ id, title, description, image, url, tags }]
+  /videos        [{ id, title, youtubeId, thumbnail }]
+  /gallery       [{ id, image, caption }]
+  /socialLinks   [{ label, url }]
+  /contact       { email, whatsapp, location }
+  /settings      { availability, theme }
+/inquiries       { pushId: { name, email, message, createdAt } }
 ```
 
-## Server-side contact API credentials
+The dashboard writes the entire `/site` object. Realtime Database Rules allow public reads of `/site`, admin-only writes, public inquiry creation, and admin-only inquiry reads/deletes. The supplied rules contain a UID placeholder and basic type/length validation; replace the placeholder before publishing. Review and test rules in the Firebase Rules simulator before production.
 
-The public contact form posts to `/api/contact`. To save inquiries securely through Firebase Admin SDK, add these **server-only** variables to `.env.local` and Vercel:
+### Optional Storage Rules
+
+If using Storage uploads, publish rules equivalent to:
+
+```rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /portfolio/{adminUid}/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.uid == 'REPLACE_WITH_FIREBASE_AUTH_UID'
+                   && adminUid == request.auth.uid
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
+```
+
+## 4. Server-side contact API credentials
+
+The public contact form posts to `/api/contact`. To save inquiries securely through the Firebase Admin SDK, add these **server-only** environment variables to `.env.local` and Vercel:
 
 ```env
 FIREBASE_ADMIN_PROJECT_ID=profile-website-b5d3a
 FIREBASE_ADMIN_CLIENT_EMAIL=your-service-account-email
-FIREBASE_ADMIN_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\\n...\\n-----END PRIVATE KEY-----\\n"
+FIREBASE_ADMIN_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 FIREBASE_DATABASE_URL=https://profile-website-b5d3a-default-rtdb.asia-southeast1.firebasedatabase.app
 ```
 
-Never commit service-account keys or place them in frontend code. Store them only as protected Vercel environment variables. Add rate limiting / bot protection (such as App Check or a server-side rate limiter) before production launch.
+Generate/download a service-account key only from Firebase/Google Cloud IAM when you have permission to manage project credentials. Never commit it, paste it into frontend code, or share it publicly. Store it only as protected Vercel environment variables. The API validates fields and length but production deployments should additionally add rate limiting / bot protection (for example, App Check or a server-side rate limiter).
 
-## Admin
+If these server variables are absent, the contact API returns a clear 503 and the page displays a fallback message; the rest of the portfolio remains usable.
 
-- Visit `/admin`.
+## 5. Admin use
+
+- Visit `https://your-domain.com/admin`.
 - Sign in with the Email/Password account whose UID matches `NEXT_PUBLIC_ADMIN_UID` and the database rules.
-- Manage profile, skills, projects, videos, gallery, social links, contact details and inquiries.
-- The client-side UID check is for user experience; Firebase Rules are the actual security boundary.
+- Edit the profile, skills, projects, videos, gallery, social links and contact details; press **Save website changes**.
+- Inquiries appear in the Inquiries tab and can be deleted.
+- Uploaded images are stored in Firebase Storage under `portfolio/{uid}/`.
 
-## Vercel deployment
+The dashboard checks the UID in the browser for a friendly access-denied screen. **The actual security boundary is Firebase Rules.** Do not rely on the client-side check alone.
 
-1. Import this GitHub repository into Vercel.
-2. Add all `NEXT_PUBLIC_FIREBASE_*` variables from `.env.local` and `NEXT_PUBLIC_ADMIN_UID` in Project → Settings → Environment Variables.
-3. Add the four server-only contact variables above if you want inquiry submissions saved through Admin SDK.
-4. Deploy using the detected Next.js build command (`next build`).
-5. Add your production domain to Firebase Authentication → Settings → Authorized domains.
-6. Test `/`, `/admin`, contact submission and content updates after deployment.
+## 6. Vercel deployment
 
-## Quality checks
+1. Push this project to a private Git repository (or upload it to your preferred Git provider).
+2. In Vercel, import the repository. Framework preset should detect Next.js.
+3. Add all `NEXT_PUBLIC_FIREBASE_*` variables from `.env.local` and `NEXT_PUBLIC_ADMIN_UID` in Project → Settings → Environment Variables.
+4. Add the four server-only contact variables above if you want contact submissions to save through the Admin SDK.
+5. Deploy. Build command is `next build`; output is managed by Next.js.
+6. Add your production domain to Firebase Authentication → Settings → Authorized domains.
+7. Test `/`, `/admin`, contact submission, and a content update after deployment.
+
+## 7. Quality checks
 
 ```bash
 npm run build
 npm run lint
 ```
 
-Run in an environment with Node 20.9+ and dependencies installed. Firebase flows require valid configuration, published rules, an authorized admin account and (for image uploads) Storage enabled.
+The repository includes TypeScript strict mode and a production build script. Run the checks in an environment with Node 20.9+ and dependencies installed. Firebase-dependent flows require valid project configuration, published rules, an authorized admin account and (for image uploads) Storage enabled.
 
-## Production notes
+## Notes / production hardening
 
-- Browser-delivered HTML, CSS and JavaScript are inspectable; minification is not source-code secrecy.
+- Browser-delivered HTML, CSS and JavaScript are always inspectable; minification is not source-code secrecy. Security comes from server-side secrets and Firebase Rules.
 - The Firebase Web API key is intended to be public. Restrict it with appropriate Google Cloud API key restrictions where practical.
-- Add CAPTCHA/App Check and rate limiting before exposing the contact endpoint widely.
-- The intro animation is non-blocking; the page content renders underneath it and reduced-motion users skip it.
+- Add a CAPTCHA/App Check and rate limiting before advertising the contact endpoint widely.
+- Consider a Content Security Policy and image-host allowlist appropriate to your deployment.
+- The intro animation is short, non-blocking and automatically removed; reduced-motion users skip it. The actual page is rendered immediately underneath it.
