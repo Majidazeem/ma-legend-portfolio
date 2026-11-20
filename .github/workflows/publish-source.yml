@@ -1,8 +1,6 @@
 name: Publish portfolio source
 on:
   push:
-    paths:
-      - "ma-legend-portfolio.zip"
 permissions:
   contents: write
 jobs:
@@ -12,15 +10,28 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
-      - name: Extract project files
+      - name: Extract uploaded project archive
+        shell: bash
         run: |
-          unzip -o ma-legend-portfolio.zip -d /tmp/ma-legend
-          cp -a /tmp/ma-legend/ma-legend-portfolio/. .
-          rm ma-legend-portfolio.zip
-      - name: Commit project source
+          ZIP="$(find . -maxdepth 1 -type f -name '*.zip' -print -quit)"
+          if [ -z "$ZIP" ]; then
+            echo "No project ZIP found in repository root."
+            exit 1
+          fi
+          mkdir -p /tmp/ma-legend
+          unzip -o "$ZIP" -d /tmp/ma-legend
+          if [ -d /tmp/ma-legend/ma-legend-portfolio ]; then
+            cp -a /tmp/ma-legend/ma-legend-portfolio/. .
+          else
+            cp -a /tmp/ma-legend/. .
+          fi
+          rm -f "$ZIP"
+      - name: Commit extracted project files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Publish MA LEGEND portfolio source"
-          git push
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish MA LEGEND portfolio source"
+            git push
+          fi
