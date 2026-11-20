@@ -1816,8 +1816,27 @@
             }
         }
 
-        function copyToClipboard(text, msg) {
-            navigator.clipboard?.writeText(text).then(() => showToast(msg)).catch(() => showToast(text));
+        async function copyToClipboard(text, msg) {
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(text);
+                } else {
+                    const field = document.createElement('textarea');
+                    field.value = text;
+                    field.setAttribute('readonly', '');
+                    field.style.position = 'fixed';
+                    field.style.opacity = '0';
+                    document.body.appendChild(field);
+                    field.select();
+                    const copied = document.execCommand('copy');
+                    field.remove();
+                    if (!copied) throw new Error('Clipboard access is unavailable.');
+                }
+                showToast(msg || 'Copied!');
+            } catch (error) {
+                console.error('Clipboard copy failed:', error);
+                showToast('Copy failed. Please select and copy manually.');
+            }
         }
 
         let toastTimer;
@@ -1841,6 +1860,7 @@
         });
 
         function bootApplication() {
+            document.documentElement.classList.add('js-ready');
             renderAllViews();
 
             if (isAdminRoute()) {
