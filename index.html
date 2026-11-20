@@ -918,6 +918,31 @@
         </nav>
     </div>
 
+    <!-- Contact modal -->
+    <div id="contact-modal" class="hidden fixed inset-0 z-[10000] items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
+        <div class="crystal-card w-full max-w-lg rounded-[28px] p-6 relative">
+            <button type="button" onclick="closeContactModal()" class="absolute top-3 right-4 text-2xl" aria-label="Close">&times;</button>
+            <h2 class="font-display text-xl font-black mb-2">Start a Project</h2>
+            <p class="text-xs opacity-75 mb-5">Tell MA LEGEND what you would like to build.</p>
+            <form onsubmit="submitClientInquiry(event)" class="space-y-3">
+                <input id="inq-name" required maxlength="100" placeholder="Your name" class="w-full rounded-xl p-3 bg-slate-800/70 border border-sky-400/30 text-white">
+                <select id="inq-service" required class="w-full rounded-xl p-3 bg-slate-800 border border-sky-400/30 text-white">
+                    <option value="">Select a service</option><option>Website Development</option><option>Android App</option><option>AI Bot / Automation</option><option>Other</option>
+                </select>
+                <textarea id="inq-msg" required rows="4" maxlength="3000" placeholder="Describe your project..." class="w-full rounded-xl p-3 bg-slate-800/70 border border-sky-400/30 text-white"></textarea>
+                <button type="submit" class="crystal-btn-orange w-full rounded-full py-3 font-bold">Send Inquiry</button>
+            </form>
+        </div>
+    </div>
+    <!-- Gallery lightbox -->
+    <div id="photo-lightbox-modal" class="hidden fixed inset-0 z-[10001] items-center justify-center bg-slate-950/95 p-4">
+        <div class="max-w-5xl w-full text-center">
+            <button type="button" onclick="closeLightbox()" class="mb-3 text-white text-3xl" aria-label="Close">&times;</button>
+            <img id="lightbox-img" alt="Gallery preview" class="max-h-[78vh] max-w-full mx-auto rounded-2xl object-contain">
+            <p id="lightbox-caption" class="text-white text-sm mt-3"></p>
+        </div>
+    </div>
+
     <div id="crystal-toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300 transform -translate-y-2">
         <div class="crystal-clear-pill rounded-full px-5 py-2.5 flex items-center gap-2.5 border-orange-400/60">
             <span class="w-2.5 h-2.5 rotate-45 bg-gradient-to-tr from-orange-500 to-amber-300 inline-block shrink-0"></span>
@@ -1703,11 +1728,13 @@
             }, 2500);
         }
 
-        document.getElementById('photo-lightbox-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'photo-lightbox-modal') closeLightbox();
+        const photoLightbox = document.getElementById('photo-lightbox-modal');
+        if (photoLightbox) photoLightbox.addEventListener('click', (e) => {
+            if (e.target === photoLightbox) closeLightbox();
         });
-        document.getElementById('contact-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'contact-modal') closeContactModal();
+        const contactModal = document.getElementById('contact-modal');
+        if (contactModal) contactModal.addEventListener('click', (e) => {
+            if (e.target === contactModal) closeContactModal();
         });
 
         function bootApplication() {
