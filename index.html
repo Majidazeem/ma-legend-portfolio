@@ -481,15 +481,22 @@
             60% { box-shadow: 0 0 32px 6px rgba(56, 189, 248, 0.5), 0 0 44px 8px rgba(168, 85, 247, 0.4); }
             100% { box-shadow: 0 22px 45px -12px rgba(0, 0, 0, 0.48); }
         }
-        /* Fail-safe: keep the portfolio visible if Firebase/module scripts fail. */
-        body:not(.js-ready) .reveal-item {
+        /* Robust first-paint fallback: never hide page content while scripts initialize. */
+        .reveal-item,
+        .reveal-item.is-revealed,
+        .reveal-right,
+        .reveal-left,
+        .reveal-top,
+        .reveal-shatter,
+        .reveal-flip,
+        .reveal-glow {
             opacity: 1 !important;
             transform: none !important;
             filter: none !important;
         }
 
-        html.js-ready #shatter-intro-overlay:not(.hidden-intro) {
-            display: flex;
+        #shatter-intro-overlay {
+            display: none !important;
         }
 
     </style>
