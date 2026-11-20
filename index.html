@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MA LEGEND (LEGEND MOD) — 3D Crystal Refractive Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* =====================================================================
+           CORE THEME VARIABLES (DARK PRISM BY DEFAULT - ZERO WHITE FLASH)
+           ===================================================================== */
+        :root {
+            --bg-primary: #050914;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --glass-bg: linear-gradient(145deg, rgba(18, 29, 54, 0.82) 0%, rgba(10, 17, 34, 0.74) 100%);
+            --glass-sub-bg: rgba(15, 23, 42, 0.65);
+            --glass-border: rgba(125, 211, 252, 0.28);
+            --glass-inner-top: rgba(255, 255, 255, 0.26);
+            --caustic-strength: 1;
+        }
+
+        body.pearl-light {
+            --bg-primary: #eef2f6;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.88) 0%, rgba(241, 245, 249, 0.78) 100%);
+            --glass-sub-bg: rgba(255, 255, 255, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.95);
+            --glass-inner-top: rgba(255, 255, 255, 0.95);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Ambient Aurora Background Orbs */
+        .aurora-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 12% 10%, rgba(14, 165, 233, 0.22), transparent 38%),
+                radial-gradient(circle at 88% 20%, rgba(249, 115, 22, 0.18), transparent 36%),
+                radial-gradient(circle at 50% 85%, rgba(168, 85, 247, 0.20), transparent 44%),
+                var(--bg-primary);
+        }
+
+        body.pearl-light .aurora-bg {
+            background:
+                radial-gradient(circle at 12% 10%, rgba(56, 189, 248, 0.28), transparent 40%),
+                radial-gradient(circle at 88% 20%, rgba(251, 146, 60, 0.24), transparent 38%),
+                radial-gradient(circle at 50% 85%, rgba(192, 132, 252, 0.22), transparent 45%),
+                #eef2f6;
+        }
+
+        /* =====================================================================
+           1. CINEMATIC 3D SPLIT-SCREEN SHATTER GLASS INTRO
+           ===================================================================== */
+        #shatter-intro-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            perspective: 1600px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(3, 7, 18, 0.88);
+            backdrop-filter: blur(20px);
+            transition: opacity 0.6s ease, background 0.6s ease;
+        }
+
+        #shatter-intro-overlay.phase-shatter {
+            background: transparent;
+            backdrop-filter: blur(0px);
+            pointer-events: none;
+        }
+
+        #shatter-intro-overlay.hidden-intro {
+            display: none !important;
+        }
+
+        .intro-half {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50.6%;
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.96) 0%, rgba(30, 41, 59, 0.9) 50%, rgba(3, 7, 18, 0.98) 100%);
+            backdrop-filter: blur(28px);
+            border: 1.5px solid rgba(56, 189, 248, 0.45);
+            box-shadow:
+                inset 0 0 60px rgba(56, 189, 248, 0.28),
+                inset 0 0 40px rgba(249, 115, 22, 0.25),
+                0 25px 70px rgba(0, 0, 0, 0.65);
+            display: flex;
+            align-items: center;
+            will-change: transform, opacity;
+            transition: transform 0.68s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
+        }
+
+        .intro-half-left {
+            left: 0;
+            justify-content: flex-end;
+            padding-right: 14px;
+            transform: translateX(-106%);
+            border-right: 2px solid #38bdf8;
+        }
+
+        .intro-half-right {
+            right: 0;
+            justify-content: flex-start;
+            padding-left: 14px;
+            transform: translateX(106%);
+            border-left: 2px solid #fb7185;
+        }
+
+        #shatter-intro-overlay.phase-join .intro-half-left,
+        #shatter-intro-overlay.phase-join .intro-half-right {
+            transform: translateX(0%);
+        }
+
+        .intro-prism-core {
+            position: relative;
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 22px 28px;
+            border-radius: 30px;
+            background: linear-gradient(155deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.88) 100%);
+            border: 1.5px solid rgba(125, 211, 252, 0.55);
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.6),
+                0 0 45px rgba(56, 189, 248, 0.55),
+                0 0 65px rgba(249, 115, 22, 0.45),
+                inset 0 2px 3px rgba(255, 255, 255, 0.35);
+            transform: scale(0.3) rotateY(90deg);
+            opacity: 0;
+            transition: transform 0.52s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.38s ease;
+        }
+
+        #shatter-intro-overlay.phase-core .intro-prism-core {
+            transform: scale(1) rotateY(0deg);
+            opacity: 1;
+        }
+
+        #shatter-intro-overlay.phase-shatter .intro-prism-core {
+            transform: scale(1.8) translateZ(320px);
+            opacity: 0;
+        }
+
+        .intro-shockwave-ring {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 9999px;
+            border: 3px solid #38bdf8;
+            box-shadow: 0 0 40px 12px rgba(56, 189, 248, 0.8), inset 0 0 30px rgba(251, 146, 60, 0.8);
+            z-index: 28;
+            transform: scale(0.2);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #shatter-intro-overlay.phase-crack .intro-shockwave-ring {
+            animation: causticShockwave 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes causticShockwave {
+            0% { transform: scale(0.2); opacity: 1; }
+            100% { transform: scale(9.5); opacity: 0; }
+        }
+
+        .intro-crack-beam {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            transform: translateX(-50%) scaleY(0);
+            background: linear-gradient(180deg, #38bdf8, #ffffff, #fb7185, #fb923c);
+            box-shadow: 0 0 35px 12px rgba(56, 189, 248, 0.95), 0 0 55px 18px rgba(251, 113, 133, 0.75);
+            z-index: 25;
+            opacity: 0;
+            transition: transform 0.25s ease-out, opacity 0.25s ease;
+        }
+
+        #shatter-intro-overlay.phase-crack .intro-crack-beam {
+            transform: translateX(-50%) scaleY(1);
+            opacity: 1;
+        }
+
+        #shatter-intro-overlay.phase-shatter .intro-half-left {
+            transform: translate3d(-120%, -10%, 280px) rotateY(-34deg) rotateZ(-8deg);
+            opacity: 0;
+        }
+        #shatter-intro-overlay.phase-shatter .intro-half-right {
+            transform: translate3d(120%, 10%, 280px) rotateY(34deg) rotateZ(8deg);
+            opacity: 0;
+        }
+        #shatter-intro-overlay.phase-shatter .intro-crack-beam {
+            opacity: 0;
+            transform: translateX(-50%) scaleX(16);
+        }
+
+        #shatter-shards-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 35;
+        }
+
+        .crystal-shard {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(56, 189, 248, 0.65), rgba(251, 146, 60, 0.6));
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 12px 26px rgba(56, 189, 248, 0.65), 0 6px 16px rgba(251, 146, 60, 0.55);
+            will-change: transform, opacity;
+            transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+        }
+
+        /* =====================================================================
+           2. 3D CRYSTAL REFRACTIVE GLASS CARDS & SUB-SURFACES
+           ===================================================================== */
+        .crystal-card {
+            position: relative;
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px) saturate(160%);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
+            border: 1.5px solid var(--glass-border);
+            box-shadow:
+                0 22px 45px -12px rgba(0, 0, 0, 0.48),
+                6px 12px 26px -6px rgba(56, 189, 248, 0.22),
+                -6px 12px 24px -6px rgba(249, 115, 22, 0.18),
+                inset 0 2px 2px var(--glass-inner-top),
+                inset 0 -2px 5px rgba(15, 23, 42, 0.35);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+        }
+
+        .crystal-card::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 16px;
+            right: 16px;
+            height: 28px;
+            border-radius: 9999px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        body.pearl-light .crystal-card::before {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0) 100%);
+        }
+
+        .crystal-sub-box {
+            background: var(--glass-sub-bg);
+            border: 1px solid var(--glass-border);
+            box-shadow: inset 0 1px 1px var(--glass-inner-top);
+        }
+
+        /* =====================================================================
+           3. CRYSTAL BUTTONS (Coral-Orange, Electric-Blue, Frosted Clear)
+           ===================================================================== */
+        .crystal-btn-orange {
+            position: relative;
+            border-radius: 9999px;
+            background: linear-gradient(180deg, #ff7849 0%, #f4511e 52%, #d84315 100%);
+            border: 1.5px solid rgba(255, 224, 208, 0.85);
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(124, 45, 18, 0.55);
+            box-shadow:
+                0 12px 24px -4px rgba(244, 81, 30, 0.55),
+                0 0 0 2px rgba(255, 255, 255, 0.18),
+                inset 0 2px 3px rgba(255, 255, 255, 0.85),
+                inset 0 -3px 6px rgba(253, 186, 116, 0.65);
+            overflow: hidden;
+            transition: all 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .crystal-btn-orange::before,
+        .crystal-btn-blue::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 10%;
+            right: 10%;
+            height: 44%;
+            border-radius: 9999px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, rgba(255, 255, 255, 0.05) 100%);
+            pointer-events: none;
+        }
+
+        .crystal-btn-orange:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 16px 30px -4px rgba(244, 81, 30, 0.7), inset 0 2px 4px #ffffff;
+        }
+
+        .crystal-btn-blue {
+            position: relative;
+            border-radius: 9999px;
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 52%, #1d4ed8 100%);
+            border: 1.5px solid rgba(224, 242, 254, 0.85);
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(12, 74, 110, 0.55);
+            box-shadow:
+                0 12px 24px -4px rgba(2, 132, 199, 0.55),
+                0 0 0 2px rgba(255, 255, 255, 0.18),
+                inset 0 2px 3px rgba(255, 255, 255, 0.88),
+                inset 0 -3px 6px rgba(125, 211, 252, 0.65);
+            overflow: hidden;
+            transition: all 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .crystal-btn-blue:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 16px 30px -4px rgba(2, 132, 199, 0.7), inset 0 2px 4px #ffffff;
+        }
+
+        .crystal-clear-pill {
+            position: relative;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border: 1.5px solid var(--glass-border);
+            color: var(--text-primary);
+            box-shadow:
+                0 10px 22px -5px rgba(0, 0, 0, 0.35),
+                4px 8px 18px -4px rgba(56, 189, 248, 0.22),
+                -4px 8px 18px -4px rgba(249, 115, 22, 0.16),
+                inset 0 2px 2px var(--glass-inner-top);
+            transition: all 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .crystal-clear-pill:hover {
+            transform: translateY(-2px);
+            border-color: rgba(56, 189, 248, 0.6);
+        }
+
+        /* =====================================================================
+           4. GLOWING TEAL SWITCH & SELECT CAPSULES
+           ===================================================================== */
+        .crystal-switch-track {
+            position: relative;
+            width: 58px;
+            height: 30px;
+            border-radius: 9999px;
+            background: rgba(51, 65, 85, 0.85);
+            border: 1.5px solid rgba(148, 163, 184, 0.45);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+            transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            shrink: 0;
+        }
+
+        .crystal-switch-track.is-on {
+            background: linear-gradient(180deg, #10b981 0%, #0d9488 55%, #14b8a6 100%);
+            border-color: rgba(167, 243, 208, 0.9);
+            box-shadow: 0 6px 18px -2px rgba(16, 185, 129, 0.55), inset 0 2px 2px rgba(255, 255, 255, 0.7);
+        }
+
+        .crystal-switch-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2.5px;
+            width: 23px;
+            height: 23px;
+            border-radius: 9999px;
+            background: radial-gradient(circle at 35% 30%, #ffffff 0%, #e2e8f0 85%);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
+            transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .crystal-switch-track.is-on .crystal-switch-thumb {
+            transform: translateX(27px);
+        }
+
+        .crystal-select-capsule {
+            background: var(--glass-bg);
+            backdrop-filter: blur(18px);
+            border: 1.5px solid var(--glass-border);
+            color: var(--text-primary);
+            box-shadow: 0 8px 18px -4px rgba(0, 0, 0, 0.3), inset 0 1.5px 2px var(--glass-inner-top);
+            transition: all 0.24s ease;
+        }
+
+        .crystal-select-capsule.selected {
+            border-color: rgba(45, 212, 191, 0.85);
+            box-shadow: 0 8px 20px -4px rgba(13, 148, 136, 0.35), inset 0 1.5px 2px var(--glass-inner-top);
+        }
+
+        .crystal-checkbox-box {
+            width: 22px;
+            height: 22px;
+            border-radius: 7px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1.5px solid rgba(148, 163, 184, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.24s ease;
+        }
+
+        .crystal-select-capsule.selected .crystal-checkbox-box {
+            background: linear-gradient(180deg, #34d399 0%, #0d9488 100%);
+            border-color: #a7f3d0;
+            box-shadow: 0 3px 8px rgba(13, 148, 136, 0.5);
+        }
+
+        .crystal-tab-active {
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
+            border: 1px solid rgba(224, 242, 254, 0.9) !important;
+            color: #ffffff !important;
+            opacity: 1 !important;
+            box-shadow: 0 6px 16px -3px rgba(2, 132, 199, 0.6), inset 0 1.5px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        /* =====================================================================
+           5. CONTINUOUS BIDIRECTIONAL 3D SCROLL REVEAL ANIMATIONS
+           ===================================================================== */
+        .reveal-item {
+            opacity: 0;
+            will-change: transform, opacity;
+            transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease, box-shadow 0.35s ease;
+        }
+
+        .reveal-right { transform: perspective(1000px) translate3d(60px, 0, -30px) rotateY(-10deg); }
+        .reveal-left { transform: perspective(1000px) translate3d(-60px, 0, -30px) rotateY(10deg); }
+        .reveal-top { transform: perspective(1000px) translate3d(0, -50px, -25px) rotateX(12deg); }
+        .reveal-shatter { transform: perspective(1000px) scale(0.86) rotate3d(1, -1, 0.4, 18deg) translateY(35px); filter: blur(4px); }
+        .reveal-flip { transform: perspective(1100px) rotateY(30deg) rotateX(8deg) scale(0.9); }
+        .reveal-glow { transform: scale(0.92) translateY(25px); }
+
+        .reveal-item.is-revealed {
+            opacity: 1;
+            transform: perspective(1000px) translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+            filter: blur(0);
+        }
+
+        .reveal-glow.is-revealed {
+            animation: prismPulseGlow 2s ease-out;
+        }
+
+        @keyframes prismPulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.85), 0 0 40px rgba(251, 146, 60, 0.75); }
+            60% { box-shadow: 0 0 32px 6px rgba(56, 189, 248, 0.5), 0 0 44px 8px rgba(168, 85, 247, 0.4); }
+            100% { box-shadow: 0 22px 45px -12px rgba(0, 0, 0, 0.48); }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-sky-500 selection:text-white">
+
+    <!-- Ambient Deep Aurora Canvas -->
+    <div class="aurora-bg"></div>
+
+    <!-- =====================================================================
+         1. CINEMATIC 3D SPLIT-SCREEN SHATTER GLASS INTRO OVERLAY
+         ===================================================================== -->
+    <div id="shatter-intro-overlay" aria-hidden="true">
+        <div class="intro-half intro-half-left">
+            <div class="text-right select-none pr-3 sm:pr-6">
+                <span class="block font-display font-black text-3xl sm:text-5xl tracking-tighter text-white">MA</span>
+                <span class="block text-[10px] sm:text-xs font-extrabold tracking-widest uppercase text-sky-400">CRYSTAL</span>
+            </div>
+        </div>
+        <div class="intro-half intro-half-right">
+            <div class="text-left select-none pl-3 sm:pl-6">
+                <span class="block font-display font-black text-3xl sm:text-5xl tracking-tighter bg-gradient-to-r from-orange-400 to-rose-500 bg-clip-text text-transparent">LEGEND</span>
+                <span class="block text-[10px] sm:text-xs font-extrabold tracking-widest uppercase text-orange-400">LEGEND MOD</span>
+            </div>
+        </div>
+
+        <!-- Custom Crown-Prism ML Monogram Core -->
+        <div class="intro-prism-core">
+            <svg class="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-lg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="introPrismGrad" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#38BDF8"/>
+                        <stop offset="50%" stop-color="#A855F7"/>
+                        <stop offset="100%" stop-color="#F97316"/>
+                    </linearGradient>
+                    <linearGradient id="introCrownGold" x1="20" y1="8" x2="60" y2="26" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#FBBF24"/>
+                        <stop offset="100%" stop-color="#EA580C"/>
+                    </linearGradient>
+                </defs>
+                <polygon points="40,4 73,22 73,58 40,76 7,58 7,22" fill="url(#introPrismGrad)" fill-opacity="0.22" stroke="url(#introPrismGrad)" stroke-width="3"/>
+                <path d="M25 24L31 15L40 22L49 15L55 24H25Z" fill="url(#introCrownGold)"/>
+                <path d="M21 54V31L31 43L41 31V54" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M47 31V54H60" stroke="#FB923C" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="text-center">
+                <div class="font-display font-black text-base sm:text-lg tracking-tight text-white">MA LEGEND</div>
+                <div class="text-[9px] font-extrabold uppercase tracking-widest text-sky-400">Initializing 3D Crystal Engine</div>
+            </div>
+        </div>
+
+        <div class="intro-shockwave-ring"></div>
+        <div class="intro-crack-beam"></div>
+        <div id="shatter-shards-layer"></div>
+    </div>
+
+    <!-- =====================================================================
+         VIEW A: PUBLIC PORTFOLIO WEBSITE
+         ===================================================================== -->
+    <div id="public-portfolio-view" class="pb-28">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 pt-4 space-y-6">
+
+            <!-- TOP CRYSTAL GLASS HEADER -->
+            <header class="crystal-card rounded-full p-2 sm:px-4 flex items-center justify-between gap-2 sticky top-3 z-30">
+                <a href="#sec-hero" class="flex items-center gap-2.5 pl-1 min-w-0 group">
+                    <div class="relative w-10 h-10 sm:w-11 sm:h-11 rounded-2xl p-0.5 bg-gradient-to-tr from-sky-400 via-purple-500 to-orange-500 shadow-md shrink-0 transition-transform duration-300 group-hover:scale-105">
+                        <div class="w-full h-full rounded-[14px] bg-slate-950 flex items-center justify-center">
+                            <svg class="w-7 h-7 sm:w-8 sm:h-8" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="navPrismGrad" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#38BDF8"/>
+                                        <stop offset="50%" stop-color="#A855F7"/>
+                                        <stop offset="100%" stop-color="#F97316"/>
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="40,4 73,22 73,58 40,76 7,58 7,22" fill="url(#navPrismGrad)" fill-opacity="0.18" stroke="url(#navPrismGrad)" stroke-width="3.5"/>
+                                <path d="M25 24L31 15L40 22L49 15L55 24H25Z" fill="#F59E0B"/>
+                                <path d="M21 54V31L31 43L41 31V54" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M47 31V54H60" stroke="#FB923C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-slate-950"></span>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-display font-black text-xs sm:text-sm tracking-tight truncate">MA LEGEND</span>
+                            <span class="px-2 py-0.5 text-[9px] font-extrabold tracking-wider uppercase rounded-full bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-sm shrink-0">
+                                LEGEND MOD
+                            </span>
+                        </div>
+                        <p class="text-[10px] font-semibold opacity-75 truncate">Burewala, Pakistan • Web &amp; Android</p>
+                    </div>
+                </a>
+
+                <div class="flex items-center gap-2 shrink-0">
+                    <!-- Desktop Theme Switch -->
+                    <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full crystal-sub-box">
+                        <span id="theme-mode-label" class="text-[10px] font-extrabold uppercase tracking-wider opacity-85">Dark Prism</span>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked="true"
+                            id="theme-toggle-switch"
+                            onclick="toggleCrystalTheme()"
+                            class="crystal-switch-track is-on"
+                            title="Switch Dark Prism / Pearl Light Mode"
+                        >
+                            <span class="crystal-switch-thumb"></span>
+                        </button>
+                    </div>
+
+                    <!-- Mobile Theme Toggle -->
+                    <button
+                        onclick="toggleCrystalTheme()"
+                        title="Toggle Dark / Pearl Theme"
+                        class="sm:hidden crystal-clear-pill w-9 h-9 rounded-2xl flex items-center justify-center text-sm font-bold cursor-pointer"
+                    >
+                        ◑
+                    </button>
+
+                    <!-- Replay Intro Button -->
+                    <button
+                        onclick="playShatterIntro()"
+                        title="Replay 3D Split-Screen Shatter Intro"
+                        class="crystal-clear-pill px-3 h-9 sm:h-10 rounded-2xl flex items-center justify-center gap-1.5 hover:text-orange-400 cursor-pointer"
+                    >
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9"/>
+                        </svg>
+                        <span class="hidden md:inline text-[11px] font-extrabold">Replay Intro</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- HERO CRYSTAL ACRYLIC CARD -->
+            <section id="sec-hero" class="crystal-card rounded-[30px] p-5 sm:p-8 space-y-5 reveal-item reveal-shatter">
+                <div class="flex flex-wrap items-center justify-between gap-2 relative z-10">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full crystal-sub-box">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                        <span class="text-[10px] sm:text-[11px] font-extrabold tracking-wider uppercase">
+                            BUREWALA, PAKISTAN • AVAILABLE
+                        </span>
+                    </div>
+                    <span class="text-[10px] sm:text-[11px] font-extrabold text-sky-400 bg-sky-500/15 border border-sky-400/30 px-3 py-1 rounded-full">
+                        3D Refractive Edition
+                    </span>
+                </div>
+
+                <div class="space-y-3 relative z-10">
+                    <h1 id="hero-headline" class="font-display text-2xl sm:text-4xl font-black tracking-tight leading-[1.18]">
+                        Engineering Next-Gen Web Platforms, Android Toolkits &amp; Digital Experiences
+                    </h1>
+                    <p id="hero-bio" class="text-xs sm:text-sm opacity-80 leading-relaxed font-medium max-w-2xl">
+                        Official digital portfolio of <strong>MA LEGEND (LEGEND MOD)</strong> — Freelance Web &amp; Android Developer and Digital Content Creator based in Burewala, Pakistan. Crafting hyper-responsive glassmorphism interfaces, custom utility APIs, and high-performance mobile apps.
+                    </p>
+                </div>
+
+                <!-- Action Buttons + Hire Switch -->
+                <div class="flex flex-wrap items-center gap-3 pt-1 relative z-10">
+                    <button
+                        onclick="openContactModal()"
+                        class="crystal-btn-orange px-6 py-3 font-display font-extrabold text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                        <span>Start Project</span>
+                    </button>
+
+                    <button
+                        onclick="scrollToSec('sec-videos')"
+                        class="crystal-btn-blue px-6 py-3 font-display font-extrabold text-xs sm:text-sm tracking-wide flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                        <span>Watch Videos</span>
+                    </button>
+
+                    <div class="ml-auto flex items-center gap-2 crystal-sub-box px-3 py-1.5 rounded-full">
+                        <span id="hire-status-text" class="text-[11px] font-extrabold">Hire Open</span>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked="true"
+                            id="hire-toggle-switch"
+                            onclick="toggleHireSwitch()"
+                            class="crystal-switch-track is-on"
+                            title="Toggle Project Availability"
+                        >
+                            <span class="crystal-switch-thumb"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Crystal Glass Stats Strip (Responsive 3-Col with proper sizing) -->
+                <div class="grid grid-cols-3 gap-2.5 sm:gap-4 pt-1 relative z-10">
+                    <div class="rounded-2xl crystal-sub-box p-3 text-center">
+                        <div class="font-display font-black text-base sm:text-2xl">50+</div>
+                        <div class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider opacity-70 mt-0.5">Builds</div>
+                    </div>
+                    <div class="rounded-2xl crystal-sub-box p-3 text-center">
+                        <div class="font-display font-black text-base sm:text-2xl text-orange-400">150K+</div>
+                        <div class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider opacity-70 mt-0.5">Users</div>
+                    </div>
+                    <div class="rounded-2xl crystal-sub-box p-3 text-center">
+                        <div class="font-display font-black text-base sm:text-2xl text-sky-400">4K HD</div>
+                        <div class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider opacity-70 mt-0.5">Creator</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEARCH & FILTER CAPSULE BAR -->
+            <section class="reveal-item reveal-left">
+                <div class="crystal-clear-pill rounded-full flex items-center justify-between p-1.5 pl-4">
+                    <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 opacity-65 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+                        </svg>
+                        <input
+                            id="global-search-input"
+                            type="text"
+                            oninput="filterPortfolioItems(this.value)"
+                            placeholder="Search projects, APKs, videos..."
+                            class="w-full bg-transparent text-xs sm:text-sm font-semibold placeholder-slate-400 focus:outline-none"
+                        />
+                    </div>
+                    <button
+                        onclick="openContactModal()"
+                        title="Request Custom Build"
+                        class="crystal-clear-pill w-10 h-9 rounded-full flex items-center justify-center hover:text-orange-400 shrink-0 ml-2 cursor-pointer"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                        </svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- SKILL CAPSULES -->
+            <section id="sec-skills" class="space-y-3 reveal-item reveal-right">
+                <div class="flex items-center justify-between px-1">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-orange-400">VERIFIED EXPERTISE</span>
+                        <h2 class="font-display text-lg sm:text-xl font-black">Core Stack &amp; Capabilities</h2>
+                    </div>
+                    <span class="text-[10px] sm:text-[11px] font-bold opacity-70">Tap to toggle</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5" id="skill-capsules-container">
+                    <button onclick="toggleSkillChip(this, 'Web')" class="crystal-select-capsule selected rounded-full p-2.5 pl-4 flex items-center justify-between gap-2 cursor-pointer">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-3.5 h-3.5 rounded-full border-2 border-sky-400 border-r-transparent inline-block shrink-0"></span>
+                            <span class="text-xs font-extrabold truncate">Full-Stack Web</span>
+                        </div>
+                        <span class="crystal-checkbox-box shrink-0">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                        </span>
+                    </button>
+
+                    <button onclick="toggleSkillChip(this, 'Android')" class="crystal-select-capsule selected rounded-full p-2.5 pl-4 flex items-center justify-between gap-2 cursor-pointer">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-3.5 h-3.5 rounded-full border-2 border-emerald-400 border-r-transparent inline-block shrink-0"></span>
+                            <span class="text-xs font-extrabold truncate">Android APK Mod</span>
+                        </div>
+                        <span class="crystal-checkbox-box shrink-0">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                        </span>
+                    </button>
+
+                    <button onclick="toggleSkillChip(this, 'API')" class="crystal-select-capsule selected rounded-full p-2.5 pl-4 flex items-center justify-between gap-2 cursor-pointer">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-3.5 h-3.5 rounded-full border-2 border-orange-400 border-r-transparent inline-block shrink-0"></span>
+                            <span class="text-xs font-extrabold truncate">REST &amp; AI Bots</span>
+                        </div>
+                        <span class="crystal-checkbox-box shrink-0">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                        </span>
+                    </button>
+
+                    <button onclick="toggleSkillChip(this, 'UI')" class="crystal-select-capsule selected rounded-full p-2.5 pl-4 flex items-center justify-between gap-2 cursor-pointer">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-3.5 h-3.5 rounded-full border-2 border-purple-400 border-r-transparent inline-block shrink-0"></span>
+                            <span class="text-xs font-extrabold truncate">3D Crystal UI/UX</span>
+                        </div>
+                        <span class="crystal-checkbox-box shrink-0">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                        </span>
+                    </button>
+
+                    <button onclick="toggleSkillChip(this, 'PHP')" class="crystal-select-capsule selected rounded-full p-2.5 pl-4 flex items-center justify-between gap-2 cursor-pointer">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-3.5 h-3.5 rounded-full border-2 border-indigo-400 border-r-transparent inline-block shrink-0"></span>
+                            <span class="text-xs font-extrabold truncate">PHP &amp; Cloud DB</span>
+                        </div>
+                        <span class="crystal-checkbox-box shrink-0">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                        </span>
+                    </button>
+
+                    <button onclick="toggleSkillChip(this, 'Creator')" class="crystal-select-capsule selected rounded-full p-2.5 pl-4 flex items-center justify-between gap-2 cursor-pointer">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-3.5 h-3.5 rounded-full border-2 border-rose-400 border-r-transparent inline-block shrink-0"></span>
+                            <span class="text-xs font-extrabold truncate">Digital Content</span>
+                        </div>
+                        <span class="crystal-checkbox-box shrink-0">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                        </span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- FEATURED PROJECTS SHOWCASE -->
+            <section id="sec-projects" class="space-y-4">
+                <div class="flex items-center justify-between px-1 reveal-item reveal-top">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-400">SIGNATURE BUILDS</span>
+                        <h2 class="font-display text-lg sm:text-2xl font-black">Featured Projects &amp; Tools</h2>
+                    </div>
+                    <span id="projects-count-pill" class="crystal-clear-pill rounded-full px-3.5 py-1 text-xs font-extrabold">
+                        4 Active
+                    </span>
+                </div>
+
+                <div id="public-projects-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+            </section>
+
+            <!-- YOUTUBE VIDEO GALLERY SHOWCASE -->
+            <section id="sec-videos" class="space-y-4">
+                <div class="flex items-center justify-between px-1 reveal-item reveal-left">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-rose-400">CREATOR STUDIO</span>
+                        <h2 class="font-display text-lg sm:text-2xl font-black">YouTube Video Showcase</h2>
+                    </div>
+                    <span class="crystal-clear-pill rounded-full px-3.5 py-1 text-xs font-extrabold text-rose-400">
+                        ▶ 4K Stream
+                    </span>
+                </div>
+
+                <div id="public-videos-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+            </section>
+
+            <!-- MULTI-EFFECT PHOTO GALLERY -->
+            <section id="sec-gallery" class="space-y-4">
+                <div class="flex items-center justify-between px-1 reveal-item reveal-right">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-purple-400">VISUAL ARCHIVE</span>
+                        <h2 class="font-display text-lg sm:text-2xl font-black">Multi-Effect Crystal Gallery</h2>
+                    </div>
+                    <span class="text-[11px] font-bold opacity-75">Tap photo to expand</span>
+                </div>
+
+                <div id="public-photos-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </section>
+
+            <!-- DIRECT CONTACT & COLLABORATION CARD -->
+            <section id="sec-contact" class="crystal-card rounded-[30px] p-5 sm:p-7 space-y-4 reveal-item reveal-shatter">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-orange-400">BUREWALA, PAKISTAN • GLOBAL</span>
+                        <h2 class="font-display text-xl sm:text-2xl font-black">Let’s Build Something Legendary</h2>
+                        <p class="text-xs opacity-80 mt-1">
+                            Available for custom websites, Android apps, AI bots, and digital collaborations.
+                        </p>
+                    </div>
+                    <button onclick="openContactModal()" class="crystal-btn-orange px-6 py-3 font-display font-extrabold text-xs sm:text-sm shrink-0 cursor-pointer">
+                        Start Project
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 relative z-10">
+                    <button onclick="copyToClipboard('https://legendmod.net', 'Website link copied!')" class="crystal-clear-pill rounded-2xl p-3 flex items-center justify-between gap-2 text-left cursor-pointer">
+                        <div class="min-w-0">
+                            <div class="text-[10px] font-extrabold uppercase opacity-60">Portal</div>
+                            <div class="text-xs font-extrabold truncate">legendmod.net</div>
+                        </div>
+                        <span class="text-[11px] font-extrabold text-sky-400">Copy</span>
+                    </button>
+
+                    <button onclick="copyToClipboard('@MA_LEGEND_MOD', 'Telegram handle copied!')" class="crystal-clear-pill rounded-2xl p-3 flex items-center justify-between gap-2 text-left cursor-pointer">
+                        <div class="min-w-0">
+                            <div class="text-[10px] font-extrabold uppercase opacity-60">Telegram</div>
+                            <div class="text-xs font-extrabold truncate">@MA_LEGEND_MOD</div>
+                        </div>
+                        <span class="text-[11px] font-extrabold text-orange-400">Copy</span>
+                    </button>
+
+                    <button onclick="copyToClipboard('contact@legendmod.net', 'Email copied!')" class="crystal-clear-pill rounded-2xl p-3 flex items-center justify-between gap-2 text-left cursor-pointer">
+                        <div class="min-w-0">
+                            <div class="text-[10px] font-extrabold uppercase opacity-60">Email</div>
+                            <div class="text-xs font-extrabold truncate">contact@legendmod.net</div>
+                        </div>
+                        <span class="text-[11px] font-extrabold text-emerald-400">Copy</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="crystal-card rounded-[26px] p-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3 reveal-item reveal-top">
+                <div class="flex items-center gap-2.5 relative z-10">
+                    <svg class="w-7 h-7 shrink-0" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="40,4 73,22 73,58 40,76 7,58 7,22" fill="#38BDF8" fill-opacity="0.18" stroke="#38BDF8" stroke-width="4"/>
+                        <path d="M25 24L31 15L40 22L49 15L55 24H25Z" fill="#F59E0B"/>
+                        <path d="M21 54V31L31 43L41 31V54" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M47 31V54H60" stroke="#FB923C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="font-display font-black text-xs sm:text-sm tracking-tight">MA LEGEND <span class="text-orange-400">(LEGEND MOD)</span></span>
+                </div>
+                <p class="text-[11px] font-semibold opacity-75 text-center sm:text-right relative z-10">
+                    © 2026 MA LEGEND • Crafted with 3D Crystal Refractive Liquid Glass
+                </p>
+            </footer>
+
+        </div>
+
+        <!-- FLOATING CRYSTAL GLASS BOTTOM NAVIGATION DOCK -->
+        <nav aria-label="Floating Bottom Dock" class="fixed bottom-3.5 left-0 right-0 z-40 px-3">
+            <div class="max-w-md mx-auto crystal-clear-pill rounded-full p-1.5 flex items-center justify-between gap-1 shadow-2xl">
+                <button onclick="scrollToSec('sec-hero', this)" class="dock-item crystal-tab-active flex-1 py-2 px-2 rounded-full text-[11px] font-extrabold flex items-center justify-center gap-1 transition cursor-pointer">
+                    <span>◈</span>
+                    <span>Home</span>
+                </button>
+                <button onclick="scrollToSec('sec-projects', this)" class="dock-item flex-1 py-2 px-2 rounded-full text-[11px] font-extrabold opacity-80 hover:opacity-100 flex items-center justify-center gap-1 transition cursor-pointer">
+                    <span>❖</span>
+                    <span>Projects</span>
+                </button>
+                <button onclick="scrollToSec('sec-videos', this)" class="dock-item flex-1 py-2 px-2 rounded-full text-[11px] font-extrabold opacity-80 hover:opacity-100 flex items-center justify-center gap-1 transition cursor-pointer">
+                    <span>▶</span>
+                    <span>Videos</span>
+                </button>
+                <button onclick="scrollToSec('sec-gallery', this)" class="dock-item flex-1 py-2 px-2 rounded-full text-[11px] font-extrabold opacity-80 hover:opacity-100 flex items-center justify-center gap-1 transition cursor-pointer">
+                    <span>✦</span>
+                    <span>Gallery</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <div id="crystal-toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300 transform -translate-y-2">
+        <div class="crystal-clear-pill rounded-full px-5 py-2.5 flex items-center gap-2.5 border-orange-400/60">
+            <span class="w-2.5 h-2.5 rotate-45 bg-gradient-to-tr from-orange-500 to-amber-300 inline-block shrink-0"></span>
+            <span id="crystal-toast-msg" class="text-xs font-extrabold whitespace-nowrap">Action Completed</span>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getDatabase, ref, get, set, onValue, push, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzUPaUFyHOX5XoMj8UPg_N84ErSq5tWyc",
+            authDomain: "profile-website-b5d3a.firebaseapp.com",
+            databaseURL: "https://profile-website-b5d3a-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "profile-website-b5d3a",
+            storageBucket: "profile-website-b5d3a.firebasestorage.app",
+            messagingSenderId: "1082003358071",
+            appId: "1:1082003358071:web:92c44fdca5540b26db2172",
+            measurementId: "G-LLXXLD4JKN"
+        };
+
+        // Replace with the UID of your Firebase Authentication admin user.
+        const ADMIN_UID = "REPLACE_WITH_FIREBASE_ADMIN_UID";
+        const firebaseApp = initializeApp(firebaseConfig);
+        const database = getDatabase(firebaseApp);
+        const auth = getAuth(firebaseApp);
+        let currentAdmin = false;
+        let inquiriesUnsubscribe = null;
+
+        function firebaseErrorText(error) {
+            const messages = {
+                "auth/invalid-credential": "Incorrect email or password.",
+                "auth/user-not-found": "Admin account was not found.",
+                "auth/wrong-password": "Incorrect email or password.",
+                "auth/too-many-requests": "Too many attempts. Try again later.",
+                "auth/operation-not-allowed": "Enable Email/Password in Firebase Authentication.",
+                "PERMISSION_DENIED": "Database permission denied. Check Realtime Database rules."
+            };
+            return messages[error?.code] || error?.message || "Firebase request failed.";
+        }
+
+        const DEFAULT_STATE = {
+            profile: {
+                headline: "Engineering Next-Gen Web Platforms, Android Toolkits & Digital Experiences",
+                bio: "Official digital portfolio of MA LEGEND (LEGEND MOD) — Freelance Web & Android Developer and Digital Content Creator based in Burewala, Pakistan. Crafting hyper-responsive glassmorphism interfaces, custom utility APIs, and high-performance mobile apps."
+            },
+            projects: [
+                {
+                    id: "proj-1",
+                    title: "legendmod.net Portal",
+                    category: "FLAGSHIP WEB HUB",
+                    desc: "Centralized developer ecosystem hosting verified Android releases, cloud API tools, and real-time community updates.",
+                    link: "https://legendmod.net",
+                    anim: "reveal-right"
+                },
+                {
+                    id: "proj-2",
+                    title: "Legend Chat Realtime",
+                    category: "ENCRYPTED MESSENGER",
+                    desc: "Ultra-fast web messaging platform with instant media sharing, custom rooms, and low-latency cloud sync.",
+                    link: "https://legendmod.net",
+                    anim: "reveal-left"
+                },
+                {
+                    id: "proj-3",
+                    title: "Legend-fixer APK Suite",
+                    category: "ANDROID TOOLKIT",
+                    desc: "Advanced Android package diagnostic and signature alignment utility built for seamless mobile performance.",
+                    link: "https://legendmod.net",
+                    anim: "reveal-shatter"
+                },
+                {
+                    id: "proj-4",
+                    title: "Legend-bot AI Assistant",
+                    category: "AI AUTOMATION",
+                    desc: "Multi-platform intelligent automation bot for smart command routing, media extraction, and group management.",
+                    link: "https://legendmod.net",
+                    anim: "reveal-top"
+                }
+            ],
+            videos: [
+                {
+                    id: "vid-1",
+                    title: "MA LEGEND — 3D Crystal UI & Android Mod Architecture",
+                    youtubeId: "dQw4w9WgXcQ",
+                    anim: "reveal-right"
+                },
+                {
+                    id: "vid-2",
+                    title: "LEGEND MOD — High-Speed Web & API Development Showcase",
+                    youtubeId: "jNQXAC9IVRw",
+                    anim: "reveal-left"
+                }
+            ],
+            photos: [
+                {
+                    id: "pho-1",
+                    title: "3D Liquid Glass Interface Concept",
+                    url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=900&q=80",
+                    anim: "reveal-shatter"
+                },
+                {
+                    id: "pho-2",
+                    title: "Prism Caustic Refraction Shader",
+                    url: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=900&q=80",
+                    anim: "reveal-glow"
+                },
+                {
+                    id: "pho-3",
+                    title: "Android APK & Cloud Workstation",
+                    url: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=900&q=80",
+                    anim: "reveal-right"
+                },
+                {
+                    id: "pho-4",
+                    title: "Holographic Crystal Architecture",
+                    url: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=900&q=80",
+                    anim: "reveal-left"
+                },
+                {
+                    id: "pho-5",
+                    title: "Digital Creator Studio Setup",
+                    url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=900&q=80",
+                    anim: "reveal-flip"
+                },
+                {
+                    id: "pho-6",
+                    title: "Next-Gen Mobile UI System",
+                    url: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&w=900&q=80",
+                    anim: "reveal-top"
+                }
+            ]
+        };
+
+        let appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+        function isAdminRoute() {
+            const params = new URLSearchParams(window.location.search);
+            return false;
+        }
+
+        async function persistAppState() {
+            renderAllViews();
+            if (!currentAdmin || !auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
+                showToast("Only the verified admin can save changes.");
+                return;
+            }
+            try {
+                await set(ref(database, "site"), appState);
+                showToast("Changes saved to Firebase!");
+            } catch (error) {
+                console.error(error);
+                showToast(firebaseErrorText(error));
+            }
+        }
+
+        function startSiteSync() {
+            onValue(ref(database, "site"), async (snapshot) => {
+                if (snapshot.exists()) {
+                    const remote = snapshot.val();
+                    appState = {
+                        ...JSON.parse(JSON.stringify(DEFAULT_STATE)),
+                        ...remote,
+                        profile: { ...DEFAULT_STATE.profile, ...(remote.profile || {}) },
+                        projects: Array.isArray(remote.projects) ? remote.projects : Object.values(remote.projects || {}),
+                        videos: Array.isArray(remote.videos) ? remote.videos : Object.values(remote.videos || {}),
+                        photos: Array.isArray(remote.photos) ? remote.photos : Object.values(remote.photos || {})
+                    };
+                } else {
+                    appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                    // Only the authenticated owner may create the initial database record.
+                    if (currentAdmin && auth.currentUser?.uid === ADMIN_UID) {
+                        try { await set(ref(database, "site"), appState); }
+                        catch (error) { console.warn("Firebase initial seed failed:", error); }
+                    }
+                }
+                renderAllViews();
+                if (currentAdmin) renderAdminLists();
+            }, (error) => {
+                console.error(error);
+                showToast(firebaseErrorText(error));
+            });
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, ch => ({
+                "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+            })[ch]);
+        }
+
+        function startInquirySync() {
+            if (!currentAdmin) return;
+            const list = document.getElementById("admin-inquiries-list");
+            if (!list) return;
+            if (inquiriesUnsubscribe) inquiriesUnsubscribe();
+            inquiriesUnsubscribe = onValue(query(ref(database, "inquiries"), orderByChild("createdAt"), limitToLast(50)), (snapshot) => {
+                const items = [];
+                snapshot.forEach(child => items.push({ id: child.key, ...child.val() }));
+                items.reverse();
+                list.innerHTML = items.length ? items.map(item => `
+                    <div class="rounded-2xl crystal-sub-box p-3.5 space-y-1">
+                        <div class="flex items-center justify-between gap-2">
+                            <strong class="text-xs">${escapeHtml(item.name || "Unknown")}</strong>
+                            <span class="text-[10px] opacity-60">${item.createdAt ? new Date(item.createdAt).toLocaleString() : ""}</span>
+                        </div>
+                        <div class="text-[11px] text-sky-400">${escapeHtml(item.service || "")}</div>
+                        <p class="text-xs opacity-85 whitespace-pre-wrap">${escapeHtml(item.message || "")}</p>
+                    </div>`).join("") : '<p class="text-xs opacity-70">No inquiries yet.</p>';
+            }, error => {
+                console.error(error);
+                list.textContent = firebaseErrorText(error);
+            });
+        }
+
+        function extractYouTubeId(url) {
+            if (!url) return null;
+            const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const match = url.trim().match(regExp);
+            return match ? match[1] : (url.trim().length === 11 ? url.trim() : null);
+        }
+
+        function playShatterIntro() {
+            const overlay = document.getElementById('shatter-intro-overlay');
+            const shardsLayer = document.getElementById('shatter-shards-layer');
+            if (!overlay) return;
+
+            overlay.classList.remove('hidden-intro', 'phase-join', 'phase-core', 'phase-crack', 'phase-shatter');
+            shardsLayer.innerHTML = '';
+            void overlay.offsetWidth;
+
+            requestAnimationFrame(() => overlay.classList.add('phase-join'));
+            setTimeout(() => overlay.classList.add('phase-core'), 400);
+            setTimeout(() => {
+                overlay.classList.add('phase-crack');
+                spawnCrystalShards(shardsLayer);
+            }, 950);
+            setTimeout(() => overlay.classList.add('phase-shatter'), 1300);
+            setTimeout(() => {
+                overlay.classList.add('hidden-intro');
+                shardsLayer.innerHTML = '';
+            }, 2250);
+        }
+
+        function spawnCrystalShards(container) {
+            const shardCount = 24;
+            const polygons = [
+                'polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%)',
+                'polygon(10% 0%, 100% 20%, 75% 100%, 0% 80%)',
+                'polygon(50% 0%, 100% 100%, 0% 85%)'
+            ];
+
+            for (let i = 0; i < shardCount; i++) {
+                const shard = document.createElement('div');
+                shard.className = 'crystal-shard';
+                const size = 18 + Math.random() * 40;
+                shard.style.width = `${size}px`;
+                shard.style.height = `${size}px`;
+                shard.style.left = `calc(50% + ${(Math.random() - 0.5) * 80}px)`;
+                shard.style.top = `${10 + Math.random() * 80}%`;
+                shard.style.clipPath = polygons[i % polygons.length];
+                container.appendChild(shard);
+
+                const tx = (Math.random() - 0.5) * window.innerWidth * 1.4;
+                const ty = (Math.random() - 0.5) * window.innerHeight * 1.2;
+                const rotX = (Math.random() - 0.5) * 450;
+                const rotY = (Math.random() - 0.5) * 450;
+
+                requestAnimationFrame(() => {
+                    shard.style.transform = `translate3d(${tx}px, ${ty}px, 320px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(0.3)`;
+                    shard.style.opacity = '0';
+                });
+            }
+        }
+
+        let scrollObserver = null;
+        function setupScrollObserver() {
+            if (scrollObserver) scrollObserver.disconnect();
+
+            scrollObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-revealed');
+                    } else {
+                        entry.target.classList.remove('is-revealed');
+                    }
+                });
+            }, { threshold: 0.08, rootMargin: '0px 0px -10px 0px' });
+
+            document.querySelectorAll('.reveal-item').forEach((el) => scrollObserver.observe(el));
+        }
+
+        function renderAllViews() {
+            const headlineEl = document.getElementById('hero-headline');
+            const bioEl = document.getElementById('hero-bio');
+            if (headlineEl) headlineEl.textContent = appState.profile.headline;
+            if (bioEl) bioEl.textContent = appState.profile.bio;
+            const hireOpen = appState.profile.hireOpen !== false;
+            const hireSwitch = document.getElementById('hire-toggle-switch');
+            const hireText = document.getElementById('hire-status-text');
+            if (hireSwitch) {
+                hireSwitch.classList.toggle('is-on', hireOpen);
+                hireSwitch.setAttribute('aria-checked', hireOpen ? 'true' : 'false');
+            }
+            if (hireText) hireText.textContent = hireOpen ? 'Hire Open' : 'In Build';
+
+            const projGrid = document.getElementById('public-projects-grid');
+            const projCount = document.getElementById('projects-count-pill');
+            if (projGrid) {
+                const animCycle = ['reveal-right', 'reveal-left', 'reveal-shatter', 'reveal-top'];
+                projGrid.innerHTML = appState.projects.map((p, idx) => {
+                    const animClass = p.anim || animCycle[idx % animCycle.length];
+                    return `
+                        <article class="portfolio-searchable crystal-card rounded-[28px] p-5 flex flex-col justify-between space-y-4 reveal-item ${animClass}" data-search="${(p.title + ' ' + p.category + ' ' + p.desc).toLowerCase()}">
+                            <div class="space-y-2 relative z-10">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-sky-400 bg-sky-500/15 border border-sky-400/30 px-2.5 py-0.5 rounded-full">
+                                        ${escapeHtml(p.category)}
+                                    </span>
+                                    <span class="text-[11px] font-extrabold text-emerald-400">● Live</span>
+                                </div>
+                                <h3 class="font-display text-lg font-black">${escapeHtml(p.title)}</h3>
+                                <p class="text-xs opacity-80 leading-relaxed">${p.desc}</p>
+                            </div>
+                            <div class="pt-1 relative z-10">
+                                <a href="${p.link || 'https://legendmod.net'}" target="_blank" rel="noopener noreferrer" class="crystal-btn-blue w-full py-2.5 px-5 font-display font-extrabold text-xs tracking-wide flex items-center justify-center gap-1.5">
+                                    <span>View Demo</span>
+                                    <span>↗</span>
+                                </a>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+                if (projCount) projCount.textContent = `${appState.projects.length} Active`;
+            }
+
+            const vidGrid = document.getElementById('public-videos-grid');
+            if (vidGrid) {
+                const vidAnims = ['reveal-right', 'reveal-left', 'reveal-top', 'reveal-shatter'];
+                vidGrid.innerHTML = appState.videos.map((v, idx) => {
+                    const animClass = v.anim || vidAnims[idx % vidAnims.length];
+                    return `
+                        <div class="portfolio-searchable crystal-card rounded-[28px] p-3.5 space-y-3 reveal-item ${animClass}" data-search="${v.title.toLowerCase()} youtube video">
+                            <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 border border-sky-400/20 shadow-inner z-10">
+                                <iframe
+                                    class="w-full h-full"
+                                    src="https://www.youtube.com/embed/${v.youtubeId}?rel=0"
+                                    title="${escapeHtml(v.title)}"
+                                    loading="lazy"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen
+                                ></iframe>
+                            </div>
+                            <div class="px-1 flex items-center justify-between gap-2 relative z-10">
+                                <h3 class="font-display font-extrabold text-xs sm:text-sm truncate">${escapeHtml(v.title)}</h3>
+                                <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-400/30 shrink-0">YouTube</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const photoGrid = document.getElementById('public-photos-grid');
+            if (photoGrid) {
+                const photoAnims = ['reveal-shatter', 'reveal-glow', 'reveal-right', 'reveal-left', 'reveal-flip', 'reveal-top'];
+                photoGrid.innerHTML = appState.photos.map((ph, idx) => {
+                    const animClass = ph.anim || photoAnims[idx % photoAnims.length];
+                    return `
+                        <div onclick="openLightbox('${ph.url.replace(/'/g, "\\'")}', '${ph.title.replace(/'/g, "\\'")}')" class="portfolio-searchable crystal-card rounded-[26px] p-2.5 space-y-2.5 cursor-pointer reveal-item ${animClass}" data-search="${ph.title.toLowerCase()} gallery photo">
+                            <div class="relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-950/40 z-10">
+                                <img
+                                    src="${ph.url}"
+                                    alt="${escapeHtml(ph.title)}"
+                                    loading="lazy"
+                                    onerror="this.src='https://placehold.co/600x450/0f172a/38bdf8?text=MA+LEGEND'"
+                                    class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                                />
+                            </div>
+                            <div class="px-1.5 pb-0.5 flex items-center justify-between gap-2 relative z-10">
+                                <span class="font-display font-extrabold text-xs truncate">${escapeHtml(ph.title)}</span>
+                                <span class="text-[10px] font-bold text-sky-400 shrink-0">Expand ⤢</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            renderAdminLists();
+            setupScrollObserver();
+        }
+
+        function renderAdminLists() {
+            const adminVidList = document.getElementById('admin-videos-list');
+            if (adminVidList) {
+                adminVidList.innerHTML = appState.videos.map((v, i) => `
+                    <div class="flex items-center justify-between gap-2 rounded-2xl crystal-sub-box px-3.5 py-2.5">
+                        <div class="min-w-0">
+                            <div class="text-xs font-extrabold truncate">${escapeHtml(v.title)}</div>
+                            <div class="text-[10px] font-mono opacity-65">ID: ${v.youtubeId}</div>
+                        </div>
+                        <button onclick="adminDeleteItem('videos', ${i})" class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 text-[11px] font-extrabold hover:bg-rose-500/30 cursor-pointer">
+                            Delete
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            const adminPhotoList = document.getElementById('admin-photos-list');
+            if (adminPhotoList) {
+                adminPhotoList.innerHTML = appState.photos.map((ph, i) => `
+                    <div class="flex items-center justify-between gap-2 rounded-2xl crystal-sub-box px-3.5 py-2.5">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <img src="${ph.url}" class="w-9 h-9 rounded-xl object-cover shrink-0" />
+                            <div class="min-w-0">
+                                <div class="text-xs font-extrabold truncate">${escapeHtml(ph.title)}</div>
+                                <div class="text-[10px] font-bold text-purple-400">${ph.anim}</div>
+                            </div>
+                        </div>
+                        <button onclick="adminDeleteItem('photos', ${i})" class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 text-[11px] font-extrabold hover:bg-rose-500/30 cursor-pointer">
+                            Delete
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            const adminProjList = document.getElementById('admin-projects-list');
+            if (adminProjList) {
+                adminProjList.innerHTML = appState.projects.map((p, i) => `
+                    <div class="flex items-center justify-between gap-2 rounded-2xl crystal-sub-box px-3.5 py-2.5">
+                        <div class="min-w-0">
+                            <div class="text-xs font-extrabold truncate">${escapeHtml(p.title)}</div>
+                            <div class="text-[10px] font-bold text-sky-400">${escapeHtml(p.category)}</div>
+                        </div>
+                        <button onclick="adminDeleteItem('projects', ${i})" class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 text-[11px] font-extrabold hover:bg-rose-500/30 cursor-pointer">
+                            Delete
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            const hInput = document.getElementById('admin-profile-headline');
+            const bInput = document.getElementById('admin-profile-bio');
+            if (hInput && document.activeElement !== hInput) hInput.value = appState.profile.headline;
+            if (bInput && document.activeElement !== bInput) bInput.value = appState.profile.bio;
+        }
+
+        async function handleAdminLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('admin-email-input').value.trim();
+            const password = document.getElementById('admin-passcode-input').value;
+            try {
+                const credential = await signInWithEmailAndPassword(auth, email, password);
+                if (credential.user.uid !== ADMIN_UID) {
+                    await signOut(auth);
+                    showToast("This account is not authorized as the site admin.");
+                    return;
+                }
+                currentAdmin = true;
+                document.getElementById('admin-login-card').classList.add('hidden');
+                document.getElementById('admin-dashboard-panel').classList.remove('hidden');
+                renderAdminLists();
+                startInquirySync();
+                showToast("Welcome back, MA LEGEND!");
+            } catch (error) {
+                console.error(error);
+                showToast(firebaseErrorText(error));
+            }
+        }
+
+        async function logoutAdmin() {
+            if (inquiriesUnsubscribe) inquiriesUnsubscribe();
+            inquiriesUnsubscribe = null;
+            currentAdmin = false;
+            try { await signOut(auth); } catch (error) { console.warn(error); }
+            document.getElementById('admin-dashboard-panel').classList.add('hidden');
+            document.getElementById('admin-login-card').classList.remove('hidden');
+            document.getElementById('admin-passcode-input').value = '';
+            showToast('Admin Vault Locked');
+        }
+
+        function switchToPublicSite(e) {
+            if (e) e.preventDefault();
+            window.history.pushState({}, '', window.location.pathname);
+            bootApplication();
+        }
+
+        function adminAddVideo(e) {
+            e.preventDefault();
+            const title = document.getElementById('admin-video-title').value.trim();
+            const url = document.getElementById('admin-video-url').value.trim();
+            const ytId = extractYouTubeId(url);
+            if (!ytId) return showToast('Invalid YouTube URL!');
+
+            appState.videos.unshift({
+                id: 'vid-' + Date.now(),
+                title,
+                youtubeId: ytId,
+                anim: appState.videos.length % 2 === 0 ? 'reveal-right' : 'reveal-left'
+            });
+            e.target.reset();
+            persistAppState();
+            showToast('YouTube Video Published Live!');
+        }
+
+        function adminAddPhoto(e) {
+            e.preventDefault();
+            const title = document.getElementById('admin-photo-title').value.trim();
+            const url = document.getElementById('admin-photo-url').value.trim();
+            const anim = document.getElementById('admin-photo-effect').value;
+
+            appState.photos.unshift({ id: 'pho-' + Date.now(), title, url, anim });
+            e.target.reset();
+            persistAppState();
+            showToast('Photo Added with 3D Effect!');
+        }
+
+        function adminAddProject(e) {
+            e.preventDefault();
+            const title = document.getElementById('admin-proj-title').value.trim();
+            const category = document.getElementById('admin-proj-category').value.trim();
+            const link = document.getElementById('admin-proj-link').value.trim() || 'https://legendmod.net';
+            const desc = document.getElementById('admin-proj-desc').value.trim();
+
+            appState.projects.unshift({ id: 'proj-' + Date.now(), title, category, link, desc, anim: 'reveal-shatter' });
+            e.target.reset();
+            persistAppState();
+            showToast('Project Card Published!');
+        }
+
+        function adminSaveProfile(e) {
+            e.preventDefault();
+            appState.profile.headline = document.getElementById('admin-profile-headline').value.trim();
+            appState.profile.bio = document.getElementById('admin-profile-bio').value.trim();
+            persistAppState();
+            showToast('Profile Bio Updated Live!');
+        }
+
+        function adminDeleteItem(collectionKey, index) {
+            appState[collectionKey].splice(index, 1);
+            persistAppState();
+            showToast('Item Removed from Live Site');
+        }
+
+        function toggleCrystalTheme() {
+            document.body.classList.toggle('pearl-light');
+            const isPearl = document.body.classList.contains('pearl-light');
+            const sw = document.getElementById('theme-toggle-switch');
+            const lbl = document.getElementById('theme-mode-label');
+            if (sw) {
+                sw.classList.toggle('is-on', !isPearl);
+                sw.setAttribute('aria-checked', !isPearl ? 'true' : 'false');
+            }
+            if (lbl) lbl.textContent = isPearl ? 'Pearl Light' : 'Dark Prism';
+            showToast(isPearl ? 'Pearl Studio Light Activated' : 'Dark Crystal Prism Activated');
+        }
+
+        function toggleHireSwitch() {
+            const sw = document.getElementById('hire-toggle-switch');
+            const txt = document.getElementById('hire-status-text');
+            const isOn = sw.classList.toggle('is-on');
+            sw.setAttribute('aria-checked', isOn ? 'true' : 'false');
+            txt.textContent = isOn ? 'Hire Open' : 'In Build';
+            appState.profile.hireOpen = isOn;
+            persistAppState();
+            showToast(isOn ? 'Available for New Projects' : 'Currently in Active Sprint');
+        }
+
+        function toggleSkillChip(btnEl, keyword) {
+            btnEl.classList.toggle('selected');
+            const activeChips = Array.from(document.querySelectorAll('#skill-capsules-container .crystal-select-capsule.selected'));
+            if (activeChips.length === 0) {
+                document.querySelectorAll('#skill-capsules-container .crystal-select-capsule').forEach(c => c.classList.add('selected'));
+                showToast('All Skill Filters Active');
+            } else {
+                showToast(`Updated ${keyword} Filter`);
+            }
+        }
+
+        function filterPortfolioItems(query) {
+            const q = query.trim().toLowerCase();
+            document.querySelectorAll('.portfolio-searchable').forEach((card) => {
+                const text = (card.dataset.search + ' ' + card.textContent).toLowerCase();
+                card.classList.toggle('hidden', q && !text.includes(q));
+            });
+        }
+
+        function scrollToSec(secId, btnEl) {
+            if (btnEl) {
+                document.querySelectorAll('.dock-item').forEach(b => b.classList.remove('crystal-tab-active'));
+                btnEl.classList.add('crystal-tab-active');
+            }
+            const el = document.getElementById(secId);
+            if (el) {
+                const top = el.getBoundingClientRect().top + window.pageYOffset - 76;
+                window.scrollTo({ top, behavior: 'smooth' });
+            }
+        }
+
+        function openLightbox(src, caption) {
+            const modal = document.getElementById('photo-lightbox-modal');
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox-caption').textContent = caption;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeLightbox() {
+            const modal = document.getElementById('photo-lightbox-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openContactModal() {
+            const modal = document.getElementById('contact-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeContactModal() {
+            const modal = document.getElementById('contact-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function submitClientInquiry(e) {
+            e.preventDefault();
+            const name = document.getElementById('inq-name').value.trim();
+            const service = document.getElementById('inq-service').value;
+            const message = document.getElementById('inq-msg').value.trim();
+            try {
+                await push(ref(database, "inquiries"), { name, service, message, createdAt: Date.now() });
+                closeContactModal();
+                e.target.reset();
+                showToast(`Inquiry sent successfully, ${name}!`);
+            } catch (error) {
+                console.error(error);
+                showToast("Could not send inquiry. Please try again.");
+            }
+        }
+
+        function copyToClipboard(text, msg) {
+            navigator.clipboard?.writeText(text).then(() => showToast(msg)).catch(() => showToast(text));
+        }
+
+        let toastTimer;
+        function showToast(msg) {
+            const toast = document.getElementById('crystal-toast');
+            document.getElementById('crystal-toast-msg').textContent = msg;
+            toast.classList.remove('opacity-0', '-translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-2');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 2500);
+        }
+
+        document.getElementById('photo-lightbox-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'photo-lightbox-modal') closeLightbox();
+        });
+        document.getElementById('contact-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'contact-modal') closeContactModal();
+        });
+
+        function bootApplication() {
+            renderAllViews();
+            document.getElementById('public-portfolio-view').classList.remove('hidden');
+            playShatterIntro();
+        }
+
+        window.addEventListener('hashchange', bootApplication);
+        window.addEventListener('popstate', bootApplication);
+
+        Object.assign(window, {
+            toggleCrystalTheme, playShatterIntro, openContactModal, scrollToSec,
+            toggleHireSwitch, filterPortfolioItems, toggleSkillChip, copyToClipboard,
+            openLightbox, closeLightbox, closeContactModal, submitClientInquiry,
+            handleAdminLogin, logoutAdmin, switchToPublicSite, adminAddVideo,
+            adminAddPhoto, adminAddProject, adminSaveProfile, adminDeleteItem
+        });
+
+        startSiteSync();
+        onAuthStateChanged(auth, async user => {
+            currentAdmin = !!user && user.uid === ADMIN_UID;
+            if (currentAdmin) {
+                try {
+                    const siteSnapshot = await get(ref(database, "site"));
+                    if (!siteSnapshot.exists()) {
+                        appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                        await set(ref(database, "site"), appState);
+                    }
+                } catch (error) {
+                    console.error(error);
+                    showToast(firebaseErrorText(error));
+                }
+            }
+            if (isAdminRoute() && currentAdmin) {
+                document.getElementById('admin-login-card').classList.add('hidden');
+                document.getElementById('admin-dashboard-panel').classList.remove('hidden');
+                renderAdminLists();
+                startInquirySync();
+            } else if (isAdminRoute()) {
+                document.getElementById('admin-login-card').classList.remove('hidden');
+                document.getElementById('admin-dashboard-panel').classList.add('hidden');
+            }
+        });
+        bootApplication();
+    </script>
+</body>
+</html>

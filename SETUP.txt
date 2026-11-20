@@ -1,0 +1,27 @@
+MA LEGEND — Firebase-connected website
+
+WHAT IS INCLUDED
+- Existing website design, layout, animations and content retained.
+- Portfolio content loads from Firebase Realtime Database (/site).
+- Admin can add/delete projects, YouTube videos and gallery photos.
+- Admin can edit the hero headline and bio and change hire availability.
+- Contact form submissions are stored in /inquiries and shown in the admin inbox.
+- Admin login uses Firebase Authentication Email/Password (no hard-coded passcode).
+
+ONE-TIME SETUP
+1. Firebase Console → Authentication → Sign-in method → enable Email/Password.
+2. Authentication → Users → Add user. Create your admin email and password.
+3. Copy the newly created user's UID.
+4. In index.html, replace REPLACE_WITH_FIREBASE_ADMIN_UID in ADMIN_UID with that UID.
+5. In database.rules.json, replace REPLACE_WITH_FIREBASE_ADMIN_UID with the same UID.
+6. Firebase Console → Realtime Database → Rules → paste database.rules.json → Publish.
+7. Upload both index.html and admin.html to the same hosting folder.
+8. Deploy index.html as your website's main page.
+
+ADMIN URL
+https://YOUR-DOMAIN/admin.html
+
+IMPORTANT
+- These Firebase Console steps are required; I cannot publish rules or create the Authentication user from the website file.
+- The public API key is part of normal Firebase web configuration. Security comes from Authentication and the database rules.
+- Never put a Firebase service-account private key in frontend code.

@@ -4,48 +4,28 @@
     ".write": false,
     "site": {
       ".read": true,
-      ".write": "auth != null && auth.uid === 'REPLACE_WITH_FIREBASE_AUTH_UID'",
-      ".validate": "newData.hasChildren(['profile','skills','projects','videos','gallery','socialLinks','contact','settings'])",
-      "profile": {
-        ".validate": "newData.hasChildren(['name','headline','bio']) && newData.child('name').isString() && newData.child('headline').isString() && newData.child('bio').isString() && newData.child('name').val().length <= 80 && newData.child('bio').val().length <= 2000"
-      },
-      "skills": {
-        "$skill": {
-          ".validate": "newData.hasChildren(['name']) && newData.child('name').isString() && (!newData.child('level').exists() || (newData.child('level').isNumber() && newData.child('level').val() >= 0 && newData.child('level').val() <= 100))"
-        }
-      },
-      "projects": {
-        "$id": {
-          ".validate": "newData.hasChildren(['id','title','description']) && newData.child('id').isString() && newData.child('title').isString() && newData.child('description').isString() && newData.child('title').val().length <= 120 && newData.child('description').val().length <= 2000"
-        }
-      },
-      "videos": {
-        "$id": {
-          ".validate": "newData.hasChildren(['id','title','youtubeId']) && newData.child('title').isString() && newData.child('youtubeId').isString() && newData.child('youtubeId').val().length <= 30"
-        }
-      },
-      "gallery": {
-        "$id": {
-          ".validate": "newData.hasChildren(['id','image']) && newData.child('image').isString()"
-        }
-      },
-      "socialLinks": {
-        "$id": {
-          ".validate": "newData.hasChildren(['label','url']) && newData.child('label').isString() && newData.child('url').isString()"
-        }
-      },
-      "contact": {
-        ".validate": "newData.hasChildren(['location']) && (!newData.child('email').exists() || newData.child('email').isString()) && (!newData.child('whatsapp').exists() || newData.child('whatsapp').isString()) && newData.child('location').isString()"
-      },
-      "settings": {
-        ".validate": "newData.hasChildren()"
-      }
+      ".write": "auth != null && auth.uid === 'REPLACE_WITH_FIREBASE_ADMIN_UID'"
     },
     "inquiries": {
-      ".read": "auth != null && auth.uid === 'REPLACE_WITH_FIREBASE_AUTH_UID'",
+      ".read": "auth != null && auth.uid === 'REPLACE_WITH_FIREBASE_ADMIN_UID'",
       "$inquiryId": {
-        ".write": "(!data.exists() && newData.exists()) || (auth != null && auth.uid === 'REPLACE_WITH_FIREBASE_AUTH_UID')",
-        ".validate": "newData.hasChildren(['name','email','message','createdAt']) && newData.child('name').isString() && newData.child('name').val().length <= 100 && newData.child('email').isString() && newData.child('email').val().length <= 254 && newData.child('message').isString() && newData.child('message').val().length <= 3000 && newData.child('createdAt').isNumber()"
+        ".write": "!data.exists() && newData.hasChildren(['name', 'service', 'message', 'createdAt'])",
+        ".validate": "newData.hasChildren(['name', 'service', 'message', 'createdAt'])",
+        "name": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100"
+        },
+        "service": {
+          ".validate": "newData.isString() && newData.val().length <= 150"
+        },
+        "message": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 3000"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     }
   }
