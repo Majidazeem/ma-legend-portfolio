@@ -1,0 +1,26 @@
+name: Publish portfolio source
+on:
+  push:
+    paths:
+      - "ma-legend-portfolio.zip"
+permissions:
+  contents: write
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Extract project files
+        run: |
+          unzip -o ma-legend-portfolio.zip -d /tmp/ma-legend
+          cp -a /tmp/ma-legend/ma-legend-portfolio/. .
+          rm ma-legend-portfolio.zip
+      - name: Commit project source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Publish MA LEGEND portfolio source"
+          git push
