@@ -1625,6 +1625,10 @@
 
         async function handleAdminLogin(e) {
             e.preventDefault();
+            if (ADMIN_UID === "REPLACE_WITH_FIREBASE_ADMIN_UID") {
+                showToast("Admin setup incomplete: add your Firebase admin UID in both HTML files and database rules.");
+                return;
+            }
             const email = document.getElementById('admin-email-input').value.trim();
             const password = document.getElementById('admin-passcode-input').value;
             try {
